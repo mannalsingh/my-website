@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For My Love ❤️</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+    font-family:'Segoe UI',sans-serif;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:linear-gradient(135deg,#ff4e8a,#ff9a9e);
+    overflow:hidden;
+    color:white;
+    animation:fadeIn 2s ease forwards;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:scale(1.1);}
+    to{opacity:1; transform:scale(1);}
+}
+
+body::before{
+    content:"";
+    position:absolute;
+    width:200%;
+    height:200%;
+    background:radial-gradient(circle,rgba(255,255,255,0.15),transparent 70%);
+    animation:bgZoom 6s infinite alternate;
+}
+
+@keyframes bgZoom{
+    from{transform:scale(1);}
+    to{transform:scale(1.2);}
+}
+
+.container{
+    width:90%;
+    max-width:360px;
+    padding:30px 20px;
+    background:rgba(255,255,255,0.15);
+    border-radius:25px;
+    backdrop-filter:blur(12px);
+    text-align:center;
+    position:relative;
+    z-index:2;
+}
+
+#name{
+    font-size:20px;
+    margin-bottom:10px;
+    min-height:28px;
+}
+
+#yesBtn{
+    width:100%;
+    padding:14px;
+    font-size:16px;
+    border:none;
+    border-radius:30px;
+    background:white;
+    color:#ff4e8a;
+    margin-top:15px;
+    cursor:pointer;
+    animation:heartbeat 1.5s infinite;
+}
+
+@keyframes heartbeat{
+    0%{transform:scale(1);}
+    25%{transform:scale(1.08);}
+    50%{transform:scale(1);}
+    75%{transform:scale(1.08);}
+    100%{transform:scale(1);}
+}
+
+#noBtn{
+    width:120px;
+    height:40px;
+    border:none;
+    border-radius:25px;
+    background:black;
+    color:white;
+    position:absolute;
+    cursor:pointer;
+    z-index:2;
+}
+
+canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    pointer-events:none;
+    z-index:1;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2 id="name"></h2>
+    <h3>Will You Be My Valentine Diya? 💖</h3>
+    <button id="yesBtn">YES 💖</button>
+</div>
+
+<button id="noBtn">NO 😜</button>
+
+<canvas id="fireworks"></canvas>
+
+<audio id="bgMusic" loop autoplay>
+    <source src="dil.mp3" type="audio/mp3">
+</audio>
+
+<script>
+
+// ===== Typing Animation =====
+const text="My Beautiful Princess Diyuuu👑";
+let i=0;
+function typeEffect(){
+    if(i<text.length){
+        document.getElementById("name").innerHTML+=text.charAt(i);
+        i++;
+        setTimeout(typeEffect,80);
+    }
+}
+typeEffect();
+
+// ===== Move NO Button =====
+const noBtn=document.getElementById("noBtn");
+function moveButton(){
+    const maxX=window.innerWidth-noBtn.offsetWidth;
+    const maxY=window.innerHeight-noBtn.offsetHeight;
+    noBtn.style.left=Math.random()*maxX+"px";
+    noBtn.style.top=Math.random()*maxY+"px";
+}
+moveButton();
+noBtn.addEventListener("click",moveButton);
+
+// ===== Music Auto =====
+window.addEventListener("load", function(){
+    const music = document.getElementById("bgMusic");
+    const playPromise = music.play();
+    if(playPromise !== undefined){
+        playPromise.catch(()=>{
+            document.body.addEventListener("click",function(){
+                music.play();
+            },{once:true});
+        });
+    }
+});
+
+// ===== Fireworks =====
+const canvas=document.getElementById("fireworks");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+function createFirework(x,y){
+    for(let i=0;i<60;i++){
+        particles.push({
+            x:x,
+            y:y,
+            radius:Math.random()*3,
+            color:`hsl(${Math.random()*360},100%,50%)`,
+            speedX:(Math.random()-0.5)*6,
+            speedY:(Math.random()-0.5)*6,
+            life:100
+        });
+    }
+}
+
+function animateFireworks(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    particles.forEach((p,index)=>{
+        p.x+=p.speedX;
+        p.y+=p.speedY;
+        p.life--;
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
+        ctx.fillStyle=p.color;
+        ctx.fill();
+        if(p.life<=0) particles.splice(index,1);
+    });
+    requestAnimationFrame(animateFireworks);
+}
+animateFireworks();
+
+// YES Click
+document.getElementById("yesBtn").addEventListener("click",function(){
+    createFirework(window.innerWidth/2,window.innerHeight/2);
+    localStorage.setItem("musicPlaying","true");
+    setTimeout(()=>{
+        window.location.href="love.html";
+    },2000);
+});
+
+</script>
+
+</body>
+</html>
